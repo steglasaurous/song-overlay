@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <!-- Latest compiled and minified CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+
+    <!-- jQuery library -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+
+    <!-- Latest compiled JavaScript -->
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+    <link rel="stylesheet"
+          href="https://fonts.googleapis.com/css?family=EB+Garamond">
+
+    <script>
+        var currentSongInfo;
+        var config = {
+            'websocket_host': 'localhost',
+            'websocket_port': 8090,
+            'show': [ 'song_display', 'song_progress', 'score', 'player_health' ]
+        }
+        window.onload = function() {
+            const params = new URLSearchParams(window.location.search);
+            params.forEach(function(currentValue, index) {
+                if (typeof config[index] !== 'undefined') {
+                    if (index === 'show') {
+                        config[index] = currentValue.split(',');
+                    } else {
+                        config[index] = currentValue;
+                    }
+                }
+            });
+
+            const socket = new WebSocket('ws://' + config.websocket_host + ':' + config.websocket_port);
+            socket.onopen = function() {
+                const msg = {
+                    id: "customSubscribe",
+                    request: "Subscribe",
+                    events: {
+                        general: [
+                            "Custom"
+                        ]
+                    }
+                }
+
+                socket.send(JSON.stringify(msg));
+            }
+
+            socket.onmessage = function (event) {
+                const msg = JSON.parse(event.data);
+                console.log(msg);
+                if (msg.event && msg.event.type === "Custom" && msg.data.type && msg.data.type === "songChange") {
+                    currentSongInfo = msg.data;
+
+                    if (msg.data.title !== null) {
+                        if (config.show.includes("song_display")) {
+                            updateSongDisplay(msg.data);
+                        }
+
+                        if (config.show.includes("score")) {
+                            if (msg.data.score && msg.data.score != null) {
+                                updateScore(msg.data.score);
+                            }
+
+                            if (msg.data.highScore && msg.data.highScore != null) {
+                                updateHighScore(msg.data.highScore);
+                            }
+                        }
+
+                        if (config.show.includes("song_progress") && msg.data.songPosition != null) {
+                            updateSongProgress(msg.data.songPosition);
+                        }
+
+                        if (config.show.includes("player_health") && msg.data.playerHealth != null) {
+                            updatePlayerHealth(msg.data.playerHealth);
+                        }
+                    } else {
+                        hideAll();
+                    }
+                }
+            }
+
+            function updateSongDisplay(song) {
+                // FIXME: This updates EVERYTHING every time someting new comes in.  Might be crappy on performance,
+                //        so implement a comparison on the last update to see what changed, and only update
+                //        elements that actually need to be updated.
+
+                document.getElementById("title").innerHTML = song.title;
+                document.getElementById("artist").innerHTML = song.artist;
+                document.getElementById("difficulty").innerHTML = song.difficulty;
+                document.getElementById("mapper").innerHTML = song.mapper;
+                if (song.albumArt) {
+                    document.getElementById("albumArtImage").src = song.albumArt;
+                    document.getElementById("albumArtContainer").style = "display: block;";
+                } else {
+                    document.getElementById("albumArtContainer").style = "display: none;";
+                }
+
+                if (song.extraText) {
+                    document.getElementById("extraText").innerHTML = song.extraText
+                }
+
+                if (song.songLength) {
+                    document.getElementById("songProgress").style = "display: block;";
+                } else {
+                    document.getElementById("songProgress").style = "display: none;";
+                }
+
+                document.getElementById("songBlock").classList.remove("m-fadeOut");
+                document.getElementById("songBlock").classList.add("m-fadeIn");
+                document.getElementById("songProgress").classList.add("m-fadeIn");
+                document.getElementById("songProgress").classList.remove("m-fadeOut");
+
+            }
+
+            function updateScore(score) {
+                document.getElementById("currentScore").innerHTML = score.toLocaleString();
+                if (!document.getElementById("scoreContainer").classList.contains("m-fadeIn")) {
+                    document.getElementById("scoreContainer").classList.add("m-fadeIn");
+                    document.getElementById("scoreContainer").classList.remove("m-fadeOut");
+                }
+
+                if (!document.getElementById("scores").classList.contains("m-fadeIn")) {
+                    document.getElementById("scores").classList.add("m-fadeIn");
+                    document.getElementById("scores").classList.remove("m-fadeOut");
+                }
+            }
+
+            function updateHighScore(highScore) {
+                document.getElementById("personalBestScore").innerHTML = highScore.toLocaleString();
+
+                if (!document.getElementById("personalBestScoreContainer").classList.contains("m-fadeIn")) {
+                    document.getElementById("personalBestScoreContainer").classList.add("m-fadeIn");
+                    document.getElementById("personalBestScoreContainer").classList.remove("m-fadeOut");
+                }
+            }
+
+            function updateSongProgress(progress) {
+                // Calc percentage complete
+                var songPercentComplete = Math.floor((progress / currentSongInfo.songLength) * 100);
+
+                document.getElementById("progressBar").style = "width: " + songPercentComplete + "%;";
+                document.getElementById("currentTime").innerHTML = (Math.floor(progress / 60)) + ":" + (Math.floor(progress % 60)).toString().padStart(2,"0");
+                document.getElementById("totalTime").innerHTML = (Math.floor(currentSongInfo.songLength / 60)) + ":" + (Math.floor(currentSongInfo.songLength % 60)).toString().padStart(2, "0");
+
+                if (document.getElementById("progressBar").classList.contains("m-fadeOut")) {
+                    document.getElementById("progressBar").classList.remove("m-fadeOut");
+                    document.getElementById("progressBar").classList.add("m-fadeIn");
+                }
+            }
+
+            function updatePlayerHealth(health) {
+                document.getElementById("playerHealthBar").style = "width: " + health + "%;";
+                document.getElementById("playerHealthBar").innerHTML = health + "%";
+                if (health > 75) {
+                    document.getElementById("playerHealthBar").classList.add("bg-success");
+                    document.getElementById("playerHealthBar").classList.remove("bg-warning");
+                    document.getElementById("playerHealthBar").classList.remove("bg-danger");
+                } else if (health > 40 && health < 75) {
+                    document.getElementById("playerHealthBar").classList.remove("bg-success");
+                    document.getElementById("playerHealthBar").classList.add("bg-warning");
+                    document.getElementById("playerHealthBar").classList.remove("bg-danger");
+                } else if (health < 40) {
+                    document.getElementById("playerHealthBar").classList.remove("bg-success");
+                    document.getElementById("playerHealthBar").classList.remove("bg-warning");
+                    document.getElementById("playerHealthBar").classList.add("bg-danger");
+                }
+
+                if (document.getElementById("playerHealth").classList.contains("m-fadeOut")) {
+                    document.getElementById("playerHealth").classList.remove("m-fadeOut");
+                    document.getElementById("playerHealth").classList.add("m-fadeIn");
+                }
+            }
+
+            function hideAll() {
+                document.getElementById("songBlock").classList.remove("m-fadeIn");
+                document.getElementById("songBlock").classList.add("m-fadeOut");
+                document.getElementById("songProgress").classList.remove("m-fadeIn");
+                document.getElementById("songProgress").classList.add("m-fadeOut");
+                document.getElementById("scores").classList.remove("m-fadeIn");
+                document.getElementById("scores").classList.add("m-fadeOut");
+                document.getElementById("scoreContainer").classList.remove("m-fadeIn");
+                document.getElementById("scoreContainer").classList.add("m-fadeOut");
+                document.getElementById("personalBestScoreContainer").classList.remove("m-fadeIn");
+                document.getElementById("personalBestScoreContainer").classList.add("m-fadeOut");
+                document.getElementById("playerHealth").classList.remove("m-fadeIn");
+                document.getElementById("playerHealth").classList.add("m-fadeOut");
+            }
+        }
+
+    </script>
+    <style>
+        body {
+            background: rgba(0,0,0,1);
+            font-family: "EB Garamond", serif; /* <--- CHANGE THIS TO MAKE IT YOUR OWN FONT */
+            color: white;
+            /*-webkit-text-stroke: 1px black;*/
+        }
+
+        .songBlock {
+            display: flex;
+        }
+
+        .songInfo {
+            display: flex;
+            flex-direction: column;
+            color: white;
+            /*-webkit-text-stroke: 1px black;*/
+        }
+
+        #title {
+            font-size: 48px;
+        }
+
+        #artist {
+            font-size: 32px;
+        }
+
+        #mapper {
+            font-size: 32px;
+        }
+        #difficulty {
+            font-size: 24px;
+        }
+        .albumArt {
+            /*width: 200px;*/
+        }
+
+        .albumArt img {
+            max-width: 190px;
+            margin-right: 10px;
+        }
+
+        .m-fadeOut {
+            visibility: hidden;
+            opacity: 0;
+            transition: visibility 0s linear 300ms, opacity 1000ms;
+        }
+        .m-fadeIn {
+            visibility: visible;
+            opacity: 1;
+            transition: visibility 0s linear 0s, opacity 1000ms;
+        }
+        .scores {
+            font-size: 24pt;
+        }
+
+        .songProgress {
+            /*margin-left: 10px;*/
+        }
+
+        .progress {
+            max-width: 190px;
+            margin-bottom: 1px;
+        }
+
+        .songTime {
+            font-size: 20pt;
+        }
+        .scores {
+            /*margin-left: 10px;*/
+        }
+        .fieldLabel {
+            text-transform: uppercase; font-size: 12pt;
+        }
+        #mapperLabel {
+            text-transform: uppercase;
+            color: grey;
+        }
+    </style>
+</head>
+<body>
+<div class="songBlock m-fadeOut" id="songBlock">
+    <div class="albumArt" id="albumArtContainer"><img id="albumArtImage" /></div>
+    <div class="songInfo">
+        <div id="title"></div>
+        <div><span id="artist"></span></div>
+        <div id="mapperContainer"> <span id="mapper"></span> <span id="mapperLabel">Mapper</span></div>
+        <div id="difficulty"></div>
+        <div id="extraText"></div>
+    </div>
+</div>
+<div class="songProgress m-fadeOut" id="songProgress">
+    <div class="progress position-relative">
+        <div id="progressBar" class="progress-bar m-fadeOut" role="progressbar" aria-valuenow="80"
+             aria-valuemin="0" aria-valuemax="100">
+        </div>
+    </div>
+    <div class="songTime">
+        <span id="currentTime"></span> / <span id="totalTime"></span>
+    </div>
+</div>
+
+<div class="scores m-fadeOut" id="scores">
+    <div id="scoreContainer" class="m-fadeOut">
+        <div class="fieldLabel">Score</div>
+        <div id="currentScore"></div>
+    </div>
+    <div id="personalBestScoreContainer" class="m-fadeOut">
+        <div class="fieldLabel">Personal Best</div>
+        <div id="personalBestScore"></div>
+    </div>
+</div>
+
+<div class="m-fadeOut" id="playerHealth">
+    <div class="progress position-relative">
+        <div id="playerHealthBar" class="progress-bar m-fadeOut" role="progressbar" aria-valuenow="80"
+             aria-valuemin="0" aria-valuemax="100">
+        </div>
+    </div>
+</div>
+
+</body>
+</html>

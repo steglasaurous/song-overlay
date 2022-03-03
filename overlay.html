@@ -1,6 +1,7 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
+    <title>Song Overlay</title>
     <!-- Latest compiled and minified CSS -->
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
 
@@ -58,11 +59,11 @@
                         }
 
                         if (config.show.includes("score")) {
-                            if (msg.data.score && msg.data.score != null) {
+                            if (msg.data.score) {
                                 updateScore(msg.data.score);
                             }
 
-                            if (msg.data.highScore && msg.data.highScore != null) {
+                            if (msg.data.highScore) {
                                 updateHighScore(msg.data.highScore);
                             }
                         }
@@ -89,7 +90,7 @@
                 document.getElementById("artist").innerHTML = song.artist;
                 document.getElementById("difficulty").innerHTML = song.difficulty;
                 document.getElementById("mapper").innerHTML = song.mapper;
-                if (song.albumArt) {
+                if (song.albumArt && song.albumArt !== "") {
                     document.getElementById("albumArtImage").src = song.albumArt;
                     document.getElementById("albumArtContainer").style = "display: block;";
                 } else {
@@ -304,7 +305,7 @@
 
 <div class="m-fadeOut" id="playerHealth">
     <div class="progress position-relative">
-        <div id="playerHealthBar" class="progress-bar m-fadeOut" role="progressbar" aria-valuenow="80"
+        <div id="playerHealthBar" class="progress-bar" role="progressbar" aria-valuenow="80"
              aria-valuemin="0" aria-valuemax="100">
         </div>
     </div>

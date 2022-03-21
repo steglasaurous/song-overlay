@@ -66,6 +66,9 @@
                             if (msg.data.highScore) {
                                 updateHighScore(msg.data.highScore);
                             }
+                            if (msg.data.scoreMultiplier) {
+                                updateMultiplier(msg.data.scoreMultiplier);
+                            }
                         }
 
                         if (config.show.includes("song_progress") && msg.data.songPosition != null) {
@@ -102,37 +105,44 @@
                 }
 
                 if (song.songLength) {
-                    document.getElementById("songProgress").style = "display: block;";
+                    showElement("songProgress");
                 } else {
-                    document.getElementById("songProgress").style = "display: none;";
+                    hideElement("songProgress");
                 }
 
-                document.getElementById("songBlock").classList.remove("m-fadeOut");
-                document.getElementById("songBlock").classList.add("m-fadeIn");
-                document.getElementById("songProgress").classList.add("m-fadeIn");
-                document.getElementById("songProgress").classList.remove("m-fadeOut");
-
+                showElement("songBlock");
             }
 
             function updateScore(score) {
                 document.getElementById("currentScore").innerHTML = score.toLocaleString();
-                if (!document.getElementById("scoreContainer").classList.contains("m-fadeIn")) {
-                    document.getElementById("scoreContainer").classList.add("m-fadeIn");
-                    document.getElementById("scoreContainer").classList.remove("m-fadeOut");
+                if (isElementHidden("scoreContainer")) {
+                    showElement("scoreContainer");
                 }
 
-                if (!document.getElementById("scores").classList.contains("m-fadeIn")) {
-                    document.getElementById("scores").classList.add("m-fadeIn");
-                    document.getElementById("scores").classList.remove("m-fadeOut");
+                if (isElementHidden("scores")) {
+                    showElement("scores");
+                }
+            }
+
+            function updateMultiplier(multiplier) {
+                if (multiplier > 1) {
+                    document.getElementById("scoreMultiplier").innerHTML = multiplier + 'x';
+                    showElement("scoreMultiplier");
+                } else {
+                    document.getElementById("scoreMultiplier").innerHTML = '';
+                    hideElement("scoreMultiplier");
+                }
+
+                if (isElementHidden("scoreContainer")) {
+                    showElement("scoreContainer");
                 }
             }
 
             function updateHighScore(highScore) {
                 document.getElementById("personalBestScore").innerHTML = highScore.toLocaleString();
 
-                if (!document.getElementById("personalBestScoreContainer").classList.contains("m-fadeIn")) {
-                    document.getElementById("personalBestScoreContainer").classList.add("m-fadeIn");
-                    document.getElementById("personalBestScoreContainer").classList.remove("m-fadeOut");
+                if (isElementHidden("personalBestScoreContainer")) {
+                    showElement("personalBestScoreContainer");
                 }
             }
 
@@ -144,9 +154,8 @@
                 document.getElementById("currentTime").innerHTML = (Math.floor(progress / 60)) + ":" + (Math.floor(progress % 60)).toString().padStart(2,"0");
                 document.getElementById("totalTime").innerHTML = (Math.floor(currentSongInfo.songLength / 60)) + ":" + (Math.floor(currentSongInfo.songLength % 60)).toString().padStart(2, "0");
 
-                if (document.getElementById("progressBar").classList.contains("m-fadeOut")) {
-                    document.getElementById("progressBar").classList.remove("m-fadeOut");
-                    document.getElementById("progressBar").classList.add("m-fadeIn");
+                if (isElementHidden("progressBar")) {
+                   showElement("progressBar");
                 }
             }
 
@@ -167,26 +176,33 @@
                     document.getElementById("playerHealthBar").classList.add("bg-danger");
                 }
 
-                if (document.getElementById("playerHealth").classList.contains("m-fadeOut")) {
-                    document.getElementById("playerHealth").classList.remove("m-fadeOut");
-                    document.getElementById("playerHealth").classList.add("m-fadeIn");
+                if (isElementHidden("playerHealth")) {
+                    showElement("playerHealth");
                 }
             }
 
             function hideAll() {
-                document.getElementById("songBlock").classList.remove("m-fadeIn");
-                document.getElementById("songBlock").classList.add("m-fadeOut");
-                document.getElementById("songProgress").classList.remove("m-fadeIn");
-                document.getElementById("songProgress").classList.add("m-fadeOut");
-                document.getElementById("scores").classList.remove("m-fadeIn");
-                document.getElementById("scores").classList.add("m-fadeOut");
-                document.getElementById("scoreContainer").classList.remove("m-fadeIn");
-                document.getElementById("scoreContainer").classList.add("m-fadeOut");
-                document.getElementById("personalBestScoreContainer").classList.remove("m-fadeIn");
-                document.getElementById("personalBestScoreContainer").classList.add("m-fadeOut");
-                document.getElementById("playerHealth").classList.remove("m-fadeIn");
-                document.getElementById("playerHealth").classList.add("m-fadeOut");
+                hideElement("songBlock");
+                hideElement("songProgress");
+                hideElement("scores");
+                hideElement("scoreContainer");
+                hideElement("personalBestScoreContainer");
+                hideElement("playerHealth");
             }
+        }
+
+        function showElement(elementId) {
+            document.getElementById(elementId).classList.remove("m-fadeOut");
+            document.getElementById(elementId).classList.add("m-fadeIn");
+        }
+
+        function hideElement(elementId) {
+            document.getElementById(elementId).classList.remove("m-fadeIn");
+            document.getElementById(elementId).classList.add("m-fadeOut");
+        }
+
+        function isElementHidden(elementId) {
+            return document.getElementById(elementId).classList.contains("m-fadeOut");
         }
 
     </script>
@@ -268,6 +284,20 @@
             text-transform: uppercase;
             color: grey;
         }
+        #scoreMultiplier {
+            background-color: white;
+            border-radius: 100px;
+            width: 50px;
+            text-align: center;
+            padding-top: 5px;
+            padding-bottom: 5px;
+            color: black;
+            font-size: 30px;
+            margin-left: 30px;
+        }
+        .scoreAndMultiplier {
+            display: flex;
+        }
     </style>
 </head>
 <body>
@@ -292,10 +322,14 @@
     </div>
 </div>
 
-<div class="scores m-fadeOut" id="scores">
+<!--<div class="scores m-fadeOut" id="scores">-->
+<div class="scores" id="scores">
     <div id="scoreContainer" class="m-fadeOut">
         <div class="fieldLabel">Score</div>
-        <div id="currentScore"></div>
+        <div class="scoreAndMultiplier">
+            <div id="currentScore"></div>
+            <div id="scoreMultiplier" class="m-fadeOut"></div>
+        </div>
     </div>
     <div id="personalBestScoreContainer" class="m-fadeOut">
         <div class="fieldLabel">Personal Best</div>

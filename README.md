@@ -190,6 +190,7 @@ This is the structure that's emitted from the Song Change streamer.bot action an
   "score": 412,
   "highScore": 5749349,
   "multiplier": 1,
+  "combo": 2,
   "songLength": 120,
   "songPosition": 8,
   "extraText": "Extra detail to share - ex: BSR ID",
@@ -200,6 +201,6 @@ This is the structure that's emitted from the Song Change streamer.bot action an
 ## Notes
 
 * `albumArt` can be either a data url with base64-encoded image data OR a normal URL to an image.  Set to null if not available.
-* `score`, `highScore`, `multiplier`, `playerHealth`, `songLength` and `songPosition` are considered optional and if not available from the game, will be set to null.
+* `score`, `highScore`, `multiplier`,`combo`, `playerHealth`, `songLength` and `songPosition` are considered optional and if not available from the game, will be set to null.
 * `extraText` is optional -  used for games where it's useful. Ex: for Beat Saber, shows the bsr id of the song.
 * Full block is emitted as often as game data emits it, which can be very frequent.

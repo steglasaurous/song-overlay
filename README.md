@@ -5,15 +5,15 @@ information on the song being played, album art, song progress, score and player
 
 Currently supported games:
 
-* Synth Riders
-* Beat Saber
-* Audica
-* Boombox VR
-* Audio Trip
+* [Synth Riders](https://synthridersvr.com/)
+* [Beat Saber](https://beatsaber.com/)
+* [Audica](https://audicagame.com/)
+* [Boombox VR](https://www.boomboxvr.com/)
+* [Audio Trip](http://www.kinemotik.com/audiotrip/)
 
 # Prerequisites
 
-* [Streamer.bot](https://streamer.bot) - it's the brains and glue that connects game data to the overlay.
+* [Streamer.bot](https://streamer.bot) - it's the brains and glue that connects the games to the overlay.
 
 # Setting Up
 
@@ -67,8 +67,28 @@ You're done with initial setup!  Next, find the game(s) you want to configure an
 
 ### Beat Saber
 
-1. Install the [Data Puller]() beat saber mod, which exposes a websocket server for the game.
-2.
+1. Install the [Data Puller](https://github.com/ReadieFur/BSDataPuller) beat saber mod, which exposes a websocket server for the game.
+   You can install this with the [Mod Assistant](https://github.com/Assistant/ModAssistant) app.
+2. In Streamer.bot, navigate to `Servers/Clients > Websocket Clients`. There are two websocket clients to setup in streamer.bot.
+   1. Add a new websocket client with the following settings.  This is for map data. 
+
+       | Setting                 | Value                                    |
+       |-------------------------|------------------------------------------|
+       | Name                    | Beat Saber Map Data                      |
+       | Endpoint                | ws://localhost:2946/BSDataPuller/MapData |
+       | Auto Connect on Startup | Checked                                  |
+       | Reconnect on Disconnct  | Checked                                  |
+       | Actions > Message       | Beat Saber MapData Message               |
+
+   2. Add another websocket client with the following settings.  This is for live data (score, etc)
+
+       | Setting                 | Value                                    |
+       |-------------------------|------------------------------------------|
+       | Name                    | Beat Saber Live Data                     |
+       | Endpoint                | ws://localhost:2946/BSDataPuller/MapData |
+       | Auto Connect on Startup | Checked                                  |
+       | Reconnect on Disconnct  | Checked                                  |
+       | Actions > Message       | Beat Saber LiveData Message              |
 
 ### Audica
 
@@ -124,7 +144,7 @@ For example, to show ONLY the song information without score and health, that wo
 https://steglasaurous.github.io/song-overlay/overlay.html?show=song_display
 ```
 
-#### Options List
+### Options List
 
 `show` - a comma-delimited list of parts of the overlay to show.  If not provided, everything is shown by default.   This is useful to split up parts of the overlay to different parts of the screen instead of everything being together in one place. You would do this by creating multiple browser sources in OBS with different URLs.
 
@@ -139,8 +159,6 @@ This list can include any of the following:
                    streamer.bot may be running on a different machine.  Default is localhost.
 `websocket_port` - Port of the streamer.bot websocket server.
 
-
-
 Examples:
 
 ```
@@ -153,8 +171,6 @@ https://steglasaurous.github.io/song-overlay/overlay.html?show=score
 # Show song_display and connect to streamer.bot on another machine (for 2-pc stream setups):
 https://steglasaurous.github.io/song-overlay/overlay.html?show=song_display&websocket_host=10.0.0.29
 ```
-
-
 
 # Internal Details
 

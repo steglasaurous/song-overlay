@@ -1,1 +1,93 @@
 /* You can add global styles to this file, and also import other style files */
+body {
+  background: rgba(0,0,0,1);
+
+  /* This sets the default font and color for the entire overlay. */
+  font-family: "EB Garamond", serif;
+  color: white;
+  /*-webkit-text-stroke: 1px black;*/
+}
+
+
+
+/* Song time ex: 0:15 / 2:12 */
+
+
+
+
+/* Scores section */
+
+/* The labels for scoring like "SCORE" and "PERSONAL BEST" */
+.fieldLabel {
+  text-transform: uppercase; font-size: 12pt;
+}
+
+.scoreAndMultiplier {
+  font-size: 24pt;
+}
+#personalBestScoreContainer {
+  font-size: 24pt;
+}
+
+/* Player's health - to customize percentage inside of bar */
+#playerHealthBar {
+
+}
+/* When health is > 75%, use this color. */
+.playerHealthGood {
+  background-color: green;
+}
+/* When health is > 40%, but < 75% */
+.playerHealthWarning {
+  background-color: yellow;
+}
+/* When health is < 40% */
+.playerHealthCritical {
+  background-color: red;
+}
+
+/************************************
+ * Customize below at your own risk.
+ ************************************/
+
+.m-fadeOut {
+  visibility: hidden;
+  opacity: 0;
+  transition: visibility 0s linear 300ms, opacity 1000ms;
+}
+.m-fadeIn {
+  visibility: visible;
+  opacity: 1;
+  transition: visibility 0s linear 0s, opacity 1000ms;
+}
+
+.scores {
+  padding: 10px;
+}
+#playerHealth {
+  margin-left: 10px;
+}
+.progress {
+  max-width: 190px;
+  margin-bottom: 1px;
+}
+
+
+#scoreMultiplier {
+  background-color: white;
+  border-radius: 100px;
+  width: 50px;
+  text-align: center;
+  padding-top: 5px;
+  padding-bottom: 5px;
+  color: black;
+  font-size: 30px;
+  margin-left: 30px;
+}
+
+.scoreAndMultiplier {
+  display: flex;
+}
+
+/* Importing Bootstrap SCSS file. */
+@import '~bootstrap/scss/bootstrap';

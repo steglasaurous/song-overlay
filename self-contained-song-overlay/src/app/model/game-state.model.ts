@@ -3,7 +3,7 @@ export interface GameStateModel {
   artist: string,
   difficulty: string,
   mapper: string,
-  albumArt: string,
+  albumArt?: string,
   score: number,
   highScore: number,
   multiplier: number,

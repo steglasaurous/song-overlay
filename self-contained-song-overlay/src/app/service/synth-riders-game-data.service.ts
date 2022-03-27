@@ -1,27 +1,71 @@
 import {GameDataServiceInterface} from "./game-data-service.interface";
-import {Observable} from "rxjs";
+import {Observable, Subject, tap} from "rxjs";
 import {SupportedComponentsModel} from "../model/supported-components.model";
+import {Store} from "@ngrx/store";
+import {Injectable} from "@angular/core";
+import {webSocket, WebSocketSubject} from "rxjs/webSocket";
+import {WebsocketService} from "./websocket.service";
+import {updateSongDetails} from "../state/gamestate.actions";
+import {updateSupportedComponents} from "../state/supported-components.actions";
 
+@Injectable()
 export class SynthRidersGameDataService implements GameDataServiceInterface
 {
   private host = "localhost";
   private port = 9000;
 
-  private websocket$: WebSocket;
+  private websocketService: WebsocketService;
 
-  constructor(options: any) {
+  constructor(
+    private store: Store
+  ) {
+    this.websocketService = new WebsocketService(this.host, this.port);
+    this.websocketService.connect(
+      {
+        next: (value) => {
+          this.store.dispatch(updateSupportedComponents(this.supports()));
+        },
+        error: () => {
+        },
+        complete: () => {
+        }
+      }
+    );
+
+    this.websocketService.messages$.pipe(
+      tap((data: any) => {
+        switch (data.eventType) {
+          case "SongStart":
+            this.store.dispatch(updateSongDetails({
+              title: data.data.song,
+              artist: data.data.author,
+              mapper: data.data.beatMapper,
+              difficulty: data.data.difficulty,
+              songLength: data.data.length,
+              extraText: "",
+              albumArt: data.data.albumArtData ?? null
+            }));
+
+            break;
+        }
+        }
+      )
+    ).subscribe();
 
   }
-  connect(options: any): Observable<any> {
-    return undefined;
-  }
 
-  getName(): string {
-    return "";
+  isConnected(): boolean {
+    return this.websocketService.isConnected;
   }
 
   supports(): SupportedComponentsModel {
-    return undefined;
+    return {
+      songDetails: true,
+      songStatus: true,
+      playerHealth: true,
+      score: true,
+      highScore: false
+    };
   }
 
 }

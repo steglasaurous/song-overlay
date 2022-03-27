@@ -22,8 +22,6 @@ There's two parts:
 * Initial setup of streamer.bot actions and browser source in OBS (one-time setup)
 * Setting up individual games to connect with Streamer.bot.
 
-
-
 ## Initial Setup (one-time)
 
 ### 1. Import Streamer.bot actions
@@ -55,7 +53,15 @@ You're done with initial setup!  Next, find the game(s) you want to configure an
 
 2. Configure Synth's Song Status as per step 1 of [these instructions](https://docs.google.com/document/d/13Ei4bYQRvvhUBIl4Uc5rwls-gvzsQ78bXoJQKQ_qaLo/edit#heading=h.xsyyveoj8zvr). You do not need to do step 2. Note that the important part is making sure that `{{CoverImage}}` is included in the file.  This is what produces the album art for the current song.
 
-3. In Streamer.bot, under `Servers/Clients > Websocket Clients`, add a new websocket client with the following settings:
+3. In Streamer.bot, we need to add file watchers.  Navigate to `Settings > File Watcher`.
+   1. Add a new file watcher for the song file. Right-click then click Add.  
+      1. In `File Path`, navigate to your Synth Riders directory and choose the file named `SongStatusOutput.txt`. 
+      2. For action, choose `Synth Riders Song File Change`. Click OK to save.
+   2. Add another new file watcher for the song album art.  Right-click then click Add. 
+      1. In `File Path`, navigate to your Synth Riders directory and choose the file named `SongStatusImage.png`.
+      2. For action, choose `Synth Song Album Art Change`.  Click OK to save.
+
+4. In Streamer.bot, under `Servers/Clients > Websocket Clients`, add a new websocket client with the following settings:
 
    | Setting                 | Value                          |
    | ----------------------- | ------------------------------ |
@@ -64,6 +70,7 @@ You're done with initial setup!  Next, find the game(s) you want to configure an
    | Auto Connect on Startup | Checked                        |
    | Reconnect on Disconnct  | Checked                        |
    | Actions > Message       | Synth Riders Websocket Message |
+
 
 ### Beat Saber
 
@@ -171,6 +178,16 @@ https://steglasaurous.github.io/song-overlay/overlay.html?show=score
 # Show song_display and connect to streamer.bot on another machine (for 2-pc stream setups):
 https://steglasaurous.github.io/song-overlay/overlay.html?show=song_display&websocket_host=10.0.0.29
 ```
+
+## Customizing Fonts, Colors
+
+The look and feel of the overlay is controlled within the overlay.html file.  To customize it, it does require a little knowledge
+of HTML and CSS.  
+
+Download the overlay.html from this repository customize the CSS styles to your liking.  Note that you'll need to change your browser source
+URL to a `file:///` url pointing to the file on your computer instead of the one hosted at github.io.  
+
+I'll publish more on how this works in the coming days if there's interest.
 
 # Internal Details
 

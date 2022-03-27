@@ -61,7 +61,14 @@ You're done with initial setup!  Next, find the game(s) you want to configure an
       1. In `File Path`, navigate to your Synth Riders directory and choose the file named `SongStatusImage.png`.
       2. For action, choose `Synth Song Album Art Change`.  Click OK to save.
 
-4. In Streamer.bot, under `Servers/Clients > Websocket Clients`, add a new websocket client with the following settings:
+4. Add a missing reference library to the websocket action.
+   1. In Streamer.bot, open the `Actions` tab and click on the action called `Synth Riders Websocket Message`.
+   2. Open the sub-action called `Execute Code` on the right.
+   3. Open the `References` tab towards the bottom, then right-click in the list, and click `Add reference from file..`
+   4. Choose the file called `System.Core.dll`.
+   5. Click `Save and Compile`.
+
+5. In Streamer.bot, under `Servers/Clients > Websocket Clients`, add a new websocket client with the following settings:
 
    | Setting                 | Value                          |
    | ----------------------- | ------------------------------ |
@@ -71,6 +78,7 @@ You're done with initial setup!  Next, find the game(s) you want to configure an
    | Reconnect on Disconnct  | Checked                        |
    | Actions > Message       | Synth Riders Websocket Message |
 
+6. After adding, the websocket won't automatically connect to the game at first. Right-click on it and click "connect" to force it to start connecting.
 
 ### Beat Saber
 
@@ -97,6 +105,8 @@ You're done with initial setup!  Next, find the game(s) you want to configure an
        | Reconnect on Disconnct  | Checked                                  |
        | Actions > Message       | Beat Saber LiveData Message              |
 
+3. After adding, the websocket won't automatically connect to the game at first. Right-click on it and click "connect" to force it to start connecting.
+
 ### Audica
 
 1. Install the [Audica Websocket Server mod](https://github.com/steglasaurous/audica-websocket-server) as per its instructions.
@@ -110,6 +120,8 @@ You're done with initial setup!  Next, find the game(s) you want to configure an
    | Auto Connect on Startup | Checked                         |
    | Reconnect on Disconnct  | Checked                         |
    | Actions > Message       | Audica Websocket Message        |
+
+3. After adding, the websocket won't automatically connect to the game at first. Right-click on it and click "connect" to force it to start connecting.
 
 Added bonus!  When this is setup, it also will emit bot responses to `!asr` requests and other bot commands for Audica.
 
@@ -125,6 +137,8 @@ Added bonus!  When this is setup, it also will emit bot responses to `!asr` requ
    | Reconnect on Disconnct  | Checked                     |
    | Actions > Message       | Boombox Websocket Message   |
 
+2. After adding, the websocket won't automatically connect to the game at first. Right-click on it and click "connect" to force it to start connecting.
+
 ### Audio Trip
 
 1. In Streamer.bot, under `Servers/Clients` > `Websocket Clients`, add a new websocket client with the following settings:
@@ -136,6 +150,8 @@ Added bonus!  When this is setup, it also will emit bot responses to `!asr` requ
    | Auto Connect on Startup | Checked                      |
    | Reconnect on Disconnct  | Checked                      |
    | Actions > Message       | Audio Trip Websocket Message |
+
+2. After adding, the websocket won't automatically connect to the game at first. Right-click on it and click "connect" to force it to start connecting.
 
 # Customization
 

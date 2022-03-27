@@ -66,7 +66,7 @@ export class AppComponent {
     ));
 
     this.store.dispatch(setHighScore({ highScore: 1024372}));
-    this.store.dispatch(updateScore({ score: 123456, combo: 22}));
+    this.store.dispatch(updateScore({ score: 123456, combo: 22, multiplier: 2}));
     this.store.dispatch(updatePlayerHealth({ playerHealth: 89 }));
   }
 

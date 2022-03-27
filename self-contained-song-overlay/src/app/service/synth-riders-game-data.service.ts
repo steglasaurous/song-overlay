@@ -5,7 +5,13 @@ import {Store} from "@ngrx/store";
 import {Injectable} from "@angular/core";
 import {webSocket, WebSocketSubject} from "rxjs/webSocket";
 import {WebsocketService} from "./websocket.service";
-import {updateSongDetails} from "../state/gamestate.actions";
+import {
+  clearAll,
+  updatePlayerHealth,
+  updateScore,
+  updateSongDetails,
+  updateSongPosition
+} from "../state/gamestate.actions";
 import {updateSupportedComponents} from "../state/supported-components.actions";
 
 @Injectable()
@@ -47,11 +53,43 @@ export class SynthRidersGameDataService implements GameDataServiceInterface
             }));
 
             break;
+          case "PlayTime":
+            this.store.dispatch(updateSongPosition({
+              songPosition: Math.floor(data.data.playTimeMS / 1000)
+            }));
+            break;
+          case "NoteHit":
+            this.store.dispatch(updateScore({
+              score: data.data.score,
+              combo: data.data.combo,
+              multiplier: data.data.multiplier
+            }));
+            this.store.dispatch(updatePlayerHealth({
+              playerHealth: Math.floor(data.data.lifeBarPercent * 100)
+            }));
+            break;
+          case "NoteMiss":
+            this.store.dispatch(updateScore({
+              multiplier: data.data.multiplier,
+              combo: 0
+            }));
+            this.store.dispatch(updatePlayerHealth({
+              playerHealth: Math.floor(data.data.lifeBarPercent * 100)
+            }));
+            break;
+          case "ReturnToMenu":
+            // FIXME: This only works if song completes normally.  If it's quit,
+            // the websocket server doesn't tell us.  YET.
+            this.store.dispatch(clearAll());
+            break;
+          case "SceneChange":
+            if (data.data.sceneName == '3.GameEnd') {
+              this.store.dispatch(clearAll());
+            }
+            break;
         }
-        }
-      )
+      })
     ).subscribe();
-
   }
 
   isConnected(): boolean {

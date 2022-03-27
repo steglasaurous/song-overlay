@@ -53,11 +53,12 @@ export const gameStateReducer = createReducer(
   on(clearAll, (state: GameStateModel): GameStateModel => {
     return initialState;
   }),
-  on(updateScore, (state: GameStateModel, { score, combo }): GameStateModel => {
+  on(updateScore, (state: GameStateModel, { score, combo, multiplier }): GameStateModel => {
     return {
       ...state,
-      score: score,
-      combo: combo ?? 0
+      score: score ?? state.score,
+      combo: combo ?? state.combo,
+      multiplier: multiplier ?? state.multiplier
     }
   }),
   on(setHighScore, (state: GameStateModel, { highScore }): GameStateModel => {

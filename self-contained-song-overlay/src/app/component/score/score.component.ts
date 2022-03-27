@@ -12,6 +12,9 @@ export class ScoreComponent implements OnInit {
   @Input()
   gameState: GameStateModel = initialState;
 
+  @Input()
+  showHighScore: boolean = true;
+
   constructor() { }
 
   ngOnInit(): void {

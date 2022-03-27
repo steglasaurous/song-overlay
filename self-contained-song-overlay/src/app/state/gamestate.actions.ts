@@ -26,8 +26,9 @@ export const clearAll = createAction(
 export const updateScore = createAction(
   '[Update score]',
   props<{
-    score: number,
-    combo?: number
+    score?: number,
+    combo?: number,
+    multiplier?: number
   }>()
 );
 

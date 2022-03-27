@@ -7,6 +7,8 @@ public class CPHInline
 	private string songArtist;
 	private string mapper;
 	private string difficulty;
+	private int songLength;
+	private int playerHealth;
 
 	public bool Execute()
 	{
@@ -20,6 +22,7 @@ public class CPHInline
 			this.songArtist = (string)boomboxEvent["mapInfoChanged"]["artist"];
 			this.mapper = (string)boomboxEvent["mapInfoChanged"]["mapper"];
 			this.difficulty = (string)boomboxEvent["mapInfoChanged"]["difficulty"];
+			this.songLength = (int)boomboxEvent["mapInfoChanged"]["duration"];
 		}
 
 		if ((string)boomboxEvent["_event"] == "gameState") {
@@ -34,7 +37,20 @@ public class CPHInline
 				CPH.SetArgument("songArtist", this.songArtist);
 				CPH.SetArgument("mapper", this.mapper);
 				CPH.SetArgument("difficulty", this.difficulty);
+				CPH.SetArgument("songLength", this.songLength);
 			}
+		}
+
+		if ((string)boomboxEvent["_event"] == "score") {
+			CPH.SetArgument("score", (int)Convert.ToInt64(boomboxEvent["scoreEvent"]["score"]));
+			int playerHealth = (int)Convert.ToInt64(Math.Floor((float)boomboxEvent["scoreEvent"]["currentHealth"] / (float)boomboxEvent["scoreEvent"]["maxHealth"] * 100));
+			CPH.LogDebug(Convert.ToString(playerHealth));
+			CPH.SetArgument("playerHealth", (int)Convert.ToInt64(Math.Floor((float)boomboxEvent["scoreEvent"]["currentHealth"] / (float)boomboxEvent["scoreEvent"]["maxHealth"] * 100)));
+		}
+
+		if ((string)boomboxEvent["_event"] == "songTime") {
+			CPH.LogDebug("Song time:" + (string)boomboxEvent["songTimeChanged"]);
+			CPH.SetArgument("songPosition", (int)boomboxEvent["songTimeChanged"]);
 		}
 
 		return true;

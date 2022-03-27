@@ -5,7 +5,6 @@ public class CPHInline
 {
 	public bool Execute()
 	{
-//		CPH.LogDebug(args["message"].ToString());
 		var beatSaberEvent = JObject.Parse(args["message"].ToString());
 
 		foreach (JProperty prop in (JToken)beatSaberEvent) {
@@ -14,10 +13,10 @@ public class CPHInline
 
         CPH.SetArgument("score", (int)beatSaberEvent["ScoreWithMultipliers"]);
         CPH.SetArgument("highScore", (int)beatSaberEvent["MaxScoreWithMultipliers"]);
+        CPH.SetArgument("combo", (int)beatSaberEvent["Combo"]);
         CPH.SetArgument("playerHealth", (string)beatSaberEvent["PlayerHealth"]);
         CPH.SetArgument("songPosition", (int)beatSaberEvent["TimeElapsed"]);
 
-		// FIXME: Map values to what Song Change expects
 		return true;
 	}
 }

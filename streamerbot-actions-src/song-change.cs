@@ -3,6 +3,7 @@ using System.IO;
 using System.Text;
 using Newtonsoft.Json;
 
+
 public class CPHInline
 {
 	public class SongChangeEvent {
@@ -18,6 +19,7 @@ public class CPHInline
 		public int? score { get; set; }
 		public int? scoreMultiplier { get; set; } // Multiplier usually renders in 2x, 3x, 4x, etc
 		public int? highScore { get; set; }
+		public int? combo { get; set; } // Combo (or streak) - how many successful consecutive notes hit.
 		public int? playerHealth { get; set; } // in a range of 0-100
 	}
 
@@ -25,9 +27,6 @@ public class CPHInline
 
 	public SongChangeEvent songEvent;
 
-    // The songEvent is emitted in its entirety on each update.  It guarantees the overlay
-    // has a full picture on each change (in case of disconnect, etc).  It comes at a possible
-    // cost of performance since it's a bunch of data that may not be needed each change.
 	public bool Execute()
 	{
 		if (songEvent == null) {
@@ -38,13 +37,11 @@ public class CPHInline
 			songEvent.playerHealth = null;
         }
 
-        // If "songTitle" is provided as an empty string, that's considered a 'song done' state.
-        // The overlay will hide itself and the state is cleared.
 		if (args.ContainsKey("songTitle") && args["songTitle"].ToString() == "") {
 			if (songEvent.title != null && songEvent.title != "") {
 				CPH.SetGlobalVar("lastSong", songEvent.title + " by " + songEvent.artist + " (mapped by " + songEvent.mapper + ")");
 			}
-
+			// If the title is empty, we assume the song has finished and we should clear our state
 			songEvent = null;
 			songEvent = new SongChangeEvent();
 			songEvent.type = "songChange"; // FIXME: if this is the only event, maybe get rid of this var?
@@ -72,7 +69,10 @@ public class CPHInline
 			}
 
 			if (args.ContainsKey("songPosition")) {
+
 				songEvent.songPosition = (int)Convert.ToInt64(args["songPosition"]);
+				CPH.LogDebug("" + songEvent.songPosition);
+				CPH.LogDebug(args["songPosition"].ToString());
 			}
 
 			if (args.ContainsKey("score")) {
@@ -89,6 +89,10 @@ public class CPHInline
 
 			if (args.ContainsKey("highScore")) {
 				songEvent.highScore = (int)Convert.ToInt64(args["highScore"]);
+			}
+
+			if (args.ContainsKey("combo")) {
+				songEvent.combo = (int)Convert.ToInt64(args["combo"]);
 			}
 		}
 

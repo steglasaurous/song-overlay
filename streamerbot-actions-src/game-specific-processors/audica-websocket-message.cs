@@ -18,12 +18,18 @@ public class CPHInline
 			CPH.SetArgument("songArtist", (string)audicaEvent["data"]["songArtist"]);
 			CPH.SetArgument("difficulty", (string)audicaEvent["data"]["difficulty"]);
 			CPH.SetArgument("mapper", (string)audicaEvent["data"]["songAuthor"]);
-			CPH.SetArgument("albumArt", (string)audicaEvent["data"]["albumArtData"]);
+			string albumArtData = (string)audicaEvent["data"]["albumArtData"];
+			if (albumArtData.Length > 0) {
+				CPH.LogDebug("Album art is: " + (string)audicaEvent["data"]["albumArtData"]);
+				CPH.SetArgument("albumArt", "data:image/png;base64," + (string)audicaEvent["data"]["albumArtData"]);
+			}
+
 			CPH.SetArgument("songLength", (int)audicaEvent["data"]["songLengthSeconds"]);
 		}
 
 		if ((string)audicaEvent["eventType"] == "SongPlayerStatus") {
 			CPH.SetArgument("score", (int)audicaEvent["data"]["score"]);
+			CPH.SetArgument("scoreMultiplier", (int)audicaEvent["data"]["scoreMultiplier"]);
 			// Multiply player health by 100 before returning it.
 			float playerHealth = (float)audicaEvent["data"]["health"] * 100;
 

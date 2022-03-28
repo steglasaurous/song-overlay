@@ -25,6 +25,15 @@ export class SynthRidersGameDataService implements GameDataServiceInterface
   constructor(
     private store: Store
   ) {
+    // FIXME: This is TERRIBLE and probably should be done in a way that's available via
+    //        angular configuration.  For now, it works.
+    let params = new URLSearchParams(window.location.search);
+    if (params.has('websocket_host')) {
+        this.host = params.get('websocket_host') ?? "localhost";
+    }
+    if (params.has('websocket_port')) {
+      this.port = parseInt(params.get('websocket_port') ?? "9000");
+    }
     this.websocketService = new WebsocketService(this.host, this.port);
     this.websocketService.connect(
       {
@@ -49,7 +58,7 @@ export class SynthRidersGameDataService implements GameDataServiceInterface
               difficulty: data.data.difficulty,
               songLength: data.data.length,
               extraText: "",
-              albumArt: data.data.albumArtData ?? null
+              albumArt: data.data.albumArt ?? null
             }));
 
             break;
